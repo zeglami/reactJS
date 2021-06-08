@@ -16,8 +16,8 @@ import {
   Row,
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import { Control, LocalForm, Errors } from "react-redux-form";
-
+import { Control, Form, Errors, actions } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
 const minLength = (len) => (val) => val && val.length >= len;
@@ -39,14 +39,11 @@ export class CommentForm extends Component {
   }
 
   handleSubmit(values) {
-    this.toggleModal();
-    this.props.addComment(
-      this.props.dishId,
-      values.rating,
-      values.author,
-      values.comment
-    );
-  }
+    console.log('Current State is: ' + JSON.stringify(values));
+    alert('Current State is: ' + JSON.stringify(values));
+    this.props.resetFeedbackForm();
+    // event.preventDefault();
+}
 
   render() {
     
@@ -58,7 +55,7 @@ export class CommentForm extends Component {
         <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
           <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
           <ModalBody>
-            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+            <Form  model="feedback" onSubmit={(values) => this.handleSubmit(values)}>
               <Row className="form-group">
                 <Label md={12} htmlFor="rating">
                   Rating
@@ -123,7 +120,7 @@ export class CommentForm extends Component {
               <Button type="submit" value="submit" color="primary">
                 Submit
               </Button>
-            </LocalForm>
+            </Form>
           </ModalBody>
         </Modal>
       </div>
@@ -183,7 +180,25 @@ function RenderComments({ comments, addComment, dishId }) {
 
 
 const DishDetail = (props) => {
-  if (props.dish != null) {
+  if (props.isLoading) {
+    return(
+        <div className="container">
+            <div className="row">            
+                <Loading />
+            </div>
+        </div>
+    );
+}
+else if (props.errMess) {
+    return(
+        <div className="container">
+            <div className="row">            
+                <h4>{props.errMess}</h4>
+            </div>
+        </div>
+    );
+}
+else if (props.dish != null)  {
     return (
       <div className="container">
       <div className="row">
